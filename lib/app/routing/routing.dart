@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task/presentation/onboarding/onboarding_view.dart';
 import 'routes.dart';
 
 class SplashScreen extends StatelessWidget {
@@ -27,8 +28,8 @@ class HomeScreen extends StatelessWidget {
 
 Route<dynamic>? onGenerateRoute(RouteSettings settings) {
   switch (settings.name) {
-    case AppRoutes.splash:
-      return MaterialPageRoute(builder: (_) => SplashScreen());
+    case AppRoutes.onboarding:
+      return MaterialPageRoute(builder: (_) => OnboardingView());
     case AppRoutes.login:
       return MaterialPageRoute(builder: (_) => LoginScreen());
     case AppRoutes.signup:
