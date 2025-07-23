@@ -51,7 +51,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 width: 130.w,
                 onTap: () {
                   if (currentIndex == (onboardingList.length - 1)) {
-                    Navigator.pushNamed(context, AppRoutes.login);
+                    Navigator.pushNamed(context, AppRoutes.home);
                   } else if (currentIndex == 0) {
                     pageController.jumpToPage(1);
                   } else {

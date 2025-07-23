@@ -1,39 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:task/presentation/home/home_view.dart';
 import 'package:task/presentation/onboarding/onboarding_view.dart';
 import 'routes.dart';
-
-class SplashScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(body: Center(child: Text('Splash Screen')));
-}
-
-class LoginScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(body: Center(child: Text('Login Screen')));
-}
-
-class SignupScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(body: Center(child: Text('Signup Screen')));
-}
-
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) =>
-      Scaffold(body: Center(child: Text('Home Screen')));
-}
+import '../../presentation/auth/login/login_screen.dart';
+import '../../presentation/auth/signup/signup_screen.dart';
 
 Route<dynamic>? onGenerateRoute(RouteSettings settings) {
   switch (settings.name) {
     case AppRoutes.onboarding:
       return MaterialPageRoute(builder: (_) => OnboardingView());
     case AppRoutes.login:
-      return MaterialPageRoute(builder: (_) => LoginScreen());
+      return MaterialPageRoute(builder: (_) => const LoginScreen());
     case AppRoutes.signup:
-      return MaterialPageRoute(builder: (_) => SignupScreen());
+      return MaterialPageRoute(builder: (_) => const SignUpScreen());
     case AppRoutes.home:
       return MaterialPageRoute(builder: (_) => HomeScreen());
     default:
