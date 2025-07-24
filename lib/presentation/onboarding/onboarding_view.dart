@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:task/app/constants/app_colors.dart';
 import 'package:task/app/routing/routes.dart';
-import 'package:task/data/models/onboarding_model.dart';
+import 'package:task/domain/models/onboarding_model.dart';
 import 'package:task/presentation/onboarding/widgets/custom_button.dart';
 import 'package:task/presentation/onboarding/widgets/custom_indicator.dart';
 import 'package:task/presentation/onboarding/widgets/onboarding_card.dart';
@@ -51,7 +51,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                 width: 130.w,
                 onTap: () {
                   if (currentIndex == (onboardingList.length - 1)) {
-                    Navigator.pushNamed(context, AppRoutes.home);
+                    Navigator.pushNamed(context, AppRoutes.login);
                   } else if (currentIndex == 0) {
                     pageController.jumpToPage(1);
                   } else {

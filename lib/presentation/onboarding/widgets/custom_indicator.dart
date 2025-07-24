@@ -2,7 +2,7 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:task/app/constants/app_colors.dart';
-import 'package:task/data/models/onboarding_model.dart';
+import 'package:task/domain/models/onboarding_model.dart';
 
 class CustomIndicator extends StatelessWidget {
   final int position;

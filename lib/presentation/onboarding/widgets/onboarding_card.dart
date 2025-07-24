@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:task/app/constants/app_colors.dart';
 import 'package:task/app/constants/app_typography.dart';
-import 'package:task/data/models/onboarding_model.dart';
+import 'package:task/domain/models/onboarding_model.dart';
 
 class OnBoardingCard extends StatelessWidget {
   final Onboarding onBoarding;
