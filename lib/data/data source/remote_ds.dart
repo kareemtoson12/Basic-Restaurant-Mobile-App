@@ -3,6 +3,8 @@ import 'package:task/domain/models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<UserModel> signUp(String email, String password, String userName);
+  //login
+  Future<UserModel> login(String email, String password);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -21,5 +23,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       password: password,
     );
     return UserModel.fromFirebaseUser(result.user!, userName);
+  }
+
+  //login with firebase
+
+  @override
+  Future<UserModel> login(String email, String password) async {
+    final result = await firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    return UserModel.fromFirebaseUser(
+      result.user!,
+      result.user!.displayName ?? '',
+    );
   }
 }

@@ -10,3 +10,12 @@ class SignUpUseCase {
     return repository.signUp(email, password, userName);
   }
 }
+
+class LoginUseCase {
+  final AuthRepository repository;
+  LoginUseCase(this.repository);
+
+  Future<UserModel> call(String email, String password) {
+    return repository.login(email, password);
+  }
+}

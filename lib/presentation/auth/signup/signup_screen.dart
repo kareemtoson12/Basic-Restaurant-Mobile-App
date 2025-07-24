@@ -30,9 +30,13 @@ class SignUpScreen extends StatelessWidget {
             ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
           } else if (state is AuthSuccess) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Welcome ${state.user.userName}")),
+              SnackBar(
+                content: Text(
+                  "Account created successfully ${state.user.userName}",
+                ),
+              ),
             );
-            Navigator.pushNamed(context, AppRoutes.home);
+            Navigator.pushNamed(context, AppRoutes.login);
           }
         },
         builder: (context, state) {
