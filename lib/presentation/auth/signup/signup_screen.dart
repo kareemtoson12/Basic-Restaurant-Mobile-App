@@ -118,6 +118,40 @@ class SignUpScreen extends StatelessWidget {
                                         .text
                                         .trim();
 
+                                    // Basic validation
+                                    if (name.isEmpty ||
+                                        email.isEmpty ||
+                                        pass.isEmpty ||
+                                        confirm.isEmpty) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Please fill in all fields",
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // Simple email validation
+                                    final emailRegex = RegExp(
+                                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                    );
+                                    if (!emailRegex.hasMatch(email)) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            "Please enter a valid email address",
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
                                     if (pass != confirm) {
                                       ScaffoldMessenger.of(
                                         context,
