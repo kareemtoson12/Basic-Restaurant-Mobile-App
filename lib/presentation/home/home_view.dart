@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:task/app/constants/app_colors.dart';
 import 'package:task/app/constants/app_typography.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:task/presentation/home/widgets/food_item.dart';
 import 'widgets/menu_item.dart';
 import 'widgets/food_card.dart';
+import 'package:task/presentation/cart/cart_view.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -64,6 +66,31 @@ class _HomeScreenState extends State<HomeScreen> {
       FoodItem('Veggie Sandwich', 'assets/images/food-image-8.png', 16.0, 4.1),
     ],
   };
+
+  final List<FoodItem> cart = [];
+
+  double get totalPrice => cart.fold(0, (sum, item) => sum + item.price);
+
+  void addToCart(FoodItem item) {
+    setState(() {
+      cart.add(item);
+    });
+  }
+
+  void openCart() async {
+    final updatedCart = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => CartView(cart: cart)),
+    );
+
+    if (updatedCart != null) {
+      setState(() {
+        cart
+          ..clear()
+          ..addAll(updatedCart);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -149,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (context, i) {
                     final item =
                         foodItemsByMenu[menuItems[selectedIndex].label]![i];
-                    return FoodCard(item: item);
+                    return FoodCard(item: item, onAdd: () => addToCart(item));
                   },
                 ),
               ),
@@ -157,6 +184,46 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: cart.isNotEmpty
+          ? Container(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, -2),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Total:  \$${totalPrice.toStringAsFixed(2)}',
+                      style: AppTypography.kBold18,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: openCart,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.kPrimary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                    ),
+                    child: Text(
+                      'Go to Cart',
+                      style: AppTypography.kMedium16.copyWith(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : null,
     );
   }
 }

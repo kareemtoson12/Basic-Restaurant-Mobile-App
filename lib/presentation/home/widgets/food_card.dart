@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:task/app/constants/app_typography.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-class FoodItem {
-  final String name;
-  final String image;
-  final double price;
-  final double rating;
-  const FoodItem(this.name, this.image, this.price, this.rating);
-}
+import 'package:task/presentation/home/widgets/food_item.dart';
 
 class FoodCard extends StatelessWidget {
   final FoodItem item;
-  const FoodCard({required this.item, Key? key}) : super(key: key);
+  final VoidCallback onAdd;
+  const FoodCard({required this.item, required this.onAdd, Key? key})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +78,7 @@ class FoodCard extends StatelessWidget {
             ),
             child: IconButton(
               icon: Icon(Icons.add, color: Colors.black, size: 22.sp),
-              onPressed: () {},
+              onPressed: onAdd,
             ),
           ),
         ],
