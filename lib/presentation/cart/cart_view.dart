@@ -55,7 +55,7 @@ class _CartViewState extends State<CartView> {
         backgroundColor: AppColors.kBackground,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context, cart), // نرجّع الكارت المعدل
+          onPressed: () => Navigator.pop(context, cart),
         ),
       ),
 
