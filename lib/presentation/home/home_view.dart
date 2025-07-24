@@ -1,235 +1,159 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:task/app/constants/app_colors.dart';
 import 'package:task/app/constants/app_typography.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:task/presentation/home/cubit/home_cubit.dart';
+
+import 'package:task/presentation/cart/cart_view.dart';
 import 'package:task/presentation/home/widgets/food_item.dart';
 import 'widgets/menu_item.dart';
 import 'widgets/food_card.dart';
-import 'package:task/presentation/cart/cart_view.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(create: (_) => HomeCubit(), child: const HomeView());
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int selectedIndex = 1;
+class HomeView extends StatelessWidget {
+  const HomeView({super.key});
 
-  final List<MenuData> menuItems = [
-    MenuData('assets/images/sushi.png', 'Sushi'),
-    MenuData('assets/images/chicken.png', 'Chicken'),
-    MenuData('assets/images/spaghetti.png', 'Spaghetti'),
-    MenuData('assets/images/hamburger.png', 'Sandwich'),
-  ];
+  void openCart(BuildContext context, List<FoodItem> cartItems) async {
+    try {
+      final updatedCart = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => CartView(cart: cartItems)),
+      );
 
-  final Map<String, List<FoodItem>> foodItemsByMenu = {
-    'Sushi': [
-      FoodItem('Sushi Roll', 'assets/images/food-image-1.png', 22.0, 4.8),
-      FoodItem('Salmon Sushi', 'assets/images/food-image-2.png', 25.0, 4.9),
-      FoodItem('Fish Sushi', 'assets/images/fish.png', 20.0, 4.7),
-    ],
-    'Chicken': [
-      FoodItem(
-        'Fried Chicken & Vegetables',
-        'assets/images/food-image-3.png',
-        34.0,
-        5.0,
-      ),
-      FoodItem(
-        'Fried Chicken & Garlic',
-        'assets/images/food-image-4.png',
-        28.0,
-        4.7,
-      ),
-      FoodItem('Chicken Special', 'assets/images/chicken.png', 30.0, 4.8),
-    ],
-    'Spaghetti': [
-      FoodItem(
-        'Classic Spaghetti',
-        'assets/images/food-image-5.png',
-        18.0,
-        4.5,
-      ),
-      FoodItem(
-        'Spaghetti Bolognese',
-        'assets/images/food-image-6.png',
-        21.0,
-        4.6,
-      ),
-      FoodItem('Spaghetti Special', 'assets/images/spaghetti.png', 19.0, 4.4),
-    ],
-    'Sandwich': [
-      FoodItem('Hamburger', 'assets/images/hamburger.png', 15.0, 4.3),
-      FoodItem('Sandwich Deluxe', 'assets/images/food-image-7.png', 17.0, 4.2),
-      FoodItem('Veggie Sandwich', 'assets/images/food-image-8.png', 16.0, 4.1),
-    ],
-  };
-
-  final List<FoodItem> cart = [];
-
-  double get totalPrice => cart.fold(0, (sum, item) => sum + item.price);
-
-  void addToCart(FoodItem item) {
-    setState(() {
-      cart.add(item);
-    });
-  }
-
-  void openCart() async {
-    final updatedCart = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => CartView(cart: cart)),
-    );
-
-    if (updatedCart != null) {
-      setState(() {
-        cart
-          ..clear()
-          ..addAll(updatedCart);
-      });
+      if (updatedCart != null) {
+        context.read<HomeCubit>().updateCartItems(updatedCart);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error opening cart: $e')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.kBackground,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+    return BlocBuilder<HomeCubit, HomeState>(
+      builder: (context, state) {
+        if (state is! HomeLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return Scaffold(
+          backgroundColor: AppColors.kBackground,
+          body: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 25.w),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Specials',
-                          style: AppTypography.kLight16.copyWith(
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(height: 2.h),
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              TextSpan(
-                                text: 'Menu Offers\n',
-                                style: AppTypography.kBold24.copyWith(
-                                  color: Colors.black,
-                                ),
-                              ),
-                              TextSpan(
-                                text: 'For You',
-                                style: AppTypography.kBold24.copyWith(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                  SizedBox(height: 20.h),
+                  Text('Menu', style: AppTypography.kBold36),
+                  SizedBox(height: 24.h),
+                  SizedBox(
+                    height: 100.h,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: state.menuItems.length,
+                      separatorBuilder: (_, __) => SizedBox(width: 12.w),
+                      itemBuilder: (context, index) {
+                        final item = state.menuItems[index];
+                        return MenuItem(
+                          image: item.image,
+                          title: item.title,
+                          isSelected: index == state.selectedMenuIndex,
+                          onTap: () =>
+                              context.read<HomeCubit>().selectMenuIndex(index),
+                        );
+                      },
                     ),
                   ),
-                  CircleAvatar(
-                    radius: 24.w,
-                    backgroundImage: AssetImage('assets/images/profilePic.png'),
+                  SizedBox(height: 24.h),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: EdgeInsets.only(bottom: 24.h),
+                      itemCount:
+                          state
+                              .foodItemsByMenu[state
+                                  .menuItems[state.selectedMenuIndex]
+                                  .title]
+                              ?.length ??
+                          0,
+                      separatorBuilder: (_, __) => SizedBox(height: 12.h),
+                      itemBuilder: (context, index) {
+                        final items =
+                            state.foodItemsByMenu[state
+                                .menuItems[state.selectedMenuIndex]
+                                .title]!;
+                        final item = items[index];
+                        return FoodCard(
+                          item: item,
+                          onAdd: () =>
+                              context.read<HomeCubit>().addToCart(item),
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
-              SizedBox(height: 24.h),
-              // Menu Row
-              SizedBox(
-                height: 90.h,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: menuItems.length,
-                  separatorBuilder: (context, i) => SizedBox(width: 16.w),
-                  itemBuilder: (context, i) => GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        selectedIndex = i;
-                      });
-                    },
-                    child: MenuItem(
-                      image: menuItems[i].image,
-                      label: menuItems[i].label,
-                      selected: selectedIndex == i,
-                    ),
-                  ),
-                ),
-              ),
-              // Filtered food items
-              SizedBox(height: 24.h),
-              Expanded(
-                child: ListView.separated(
-                  itemCount:
-                      foodItemsByMenu[menuItems[selectedIndex].label]?.length ??
-                      0,
-                  separatorBuilder: (context, i) => SizedBox(height: 16.h),
-                  itemBuilder: (context, i) {
-                    final item =
-                        foodItemsByMenu[menuItems[selectedIndex].label]![i];
-                    return FoodCard(item: item, onAdd: () => addToCart(item));
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-      bottomNavigationBar: cart.isNotEmpty
-          ? Container(
-              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 12.h),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 8,
-                    offset: Offset(0, -2),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Total:  \$${totalPrice.toStringAsFixed(2)}',
-                      style: AppTypography.kBold18,
+          bottomNavigationBar: state.cartItems.isNotEmpty
+              ? Container(
+                  padding: EdgeInsets.all(24.w),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(24.r),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: openCart,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.kPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Total Price', style: AppTypography.kMedium14),
+                          Text(
+                            '\$${state.totalPrice.toStringAsFixed(2)}',
+                            style: AppTypography.kBold24,
+                          ),
+                        ],
                       ),
-                    ),
-                    child: Text(
-                      'Go to Cart',
-                      style: AppTypography.kMedium16.copyWith(
-                        color: Colors.white,
+                      ElevatedButton(
+                        onPressed: () => openCart(context, state.cartItems),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.kPrimary,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w,
+                            vertical: 16.h,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100.r),
+                          ),
+                        ),
+                        child: Text(
+                          'Go to Cart',
+                          style: AppTypography.kBold16.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            )
-          : null,
+                )
+              : null,
+        );
+      },
     );
   }
-}
-
-class MenuData {
-  final String image;
-  final String label;
-  const MenuData(this.image, this.label);
 }

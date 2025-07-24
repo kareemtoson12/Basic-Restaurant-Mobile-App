@@ -4,13 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MenuItem extends StatelessWidget {
   final String image;
-  final String label;
-  final bool selected;
+  final String title;
+  final bool isSelected;
   final VoidCallback? onTap;
   const MenuItem({
     required this.image,
-    required this.label,
-    this.selected = false,
+    required this.title,
+    this.isSelected = false,
     this.onTap,
     Key? key,
   }) : super(key: key);
@@ -42,8 +42,8 @@ class MenuItem extends StatelessWidget {
           ),
           SizedBox(height: 8.h),
           Text(
-            label,
-            style: selected
+            title,
+            style: isSelected
                 ? AppTypography.kBold16.copyWith(color: Colors.black)
                 : AppTypography.kLight14.copyWith(color: Colors.black87),
           ),
