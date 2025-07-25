@@ -11,40 +11,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.13.6'
-        channel: 'stable'
-    
-    - name: Install dependencies
-      run: flutter pub get
-    
-    - name: Analyze project source
-      run: flutter analyze
-    
-    - name: Run tests
-      run: flutter test
-    
-    - name: Build APK
-      run: flutter build apk --release
-    
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: release-apk
-        path: build/app/outputs/flutter-apk/app-release.apk
-    
-    - name: Create Release
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      uses: softprops/action-gh-release@v1
-      with:
-        files: build/app/outputs/flutter-apk/app-release.apk
-        tag_name: v${{ github.run_number }}
-        name: Release v${{ github.run_number }}
-        draft: false
-        prerelease: false
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # سحب الكود من الريبو
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # إعداد Flutter بإصدار حديث (يدعم Dart 3.8.1 أو أعلى)
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0'
+          channel: stable
+
+      # تثبيت التبعيات
+      - name: Install dependencies
+        run: flutter pub get
+
+      # تحليل الكود
+      - name: Analyze project source
+        run: flutter analyze
+
+      # تشغيل الاختبارات (اختياري، ممكن تشيلها لو مش عندك اختبارات)
+      - name: Run tests
+        run: flutter test
+
+      # بناء نسخة APK
+      - name: Build release APK
+        run: flutter build apk --release
+
+      # رفع نسخة APK كـ Artifact للتحميل اليدوي
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      # إنشاء Release تلقائي ورفع الـ APK فيه
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          files: build/app/outputs/flutter-apk/app-release.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
