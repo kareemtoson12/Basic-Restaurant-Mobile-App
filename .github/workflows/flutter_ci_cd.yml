@@ -48,6 +48,7 @@ jobs:
       # إنشاء Release تلقائي ورفع الـ APK فيه
       - name: Create GitHub Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        continue-on-error: true
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v${{ github.run_number }}
