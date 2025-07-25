@@ -11,41 +11,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # سحب الكود من الريبو
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # إعداد Flutter بإصدار حديث (يدعم Dart 3.8.1 أو أعلى)
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.32.7'
           channel: stable
 
-      # تثبيت التبعيات
       - name: Install dependencies
         run: flutter pub get
 
-      # تحليل الكود
       - name: Analyze project source
         run: flutter analyze || true
 
-      # تشغيل الاختبارات (اختياري، ممكن تشيلها لو مش عندك اختبارات)
       - name: Run tests
         run: flutter test
 
-      # بناء نسخة APK
       - name: Build release APK
         run: flutter build apk --release
 
-      # رفع نسخة APK كـ Artifact للتحميل اليدوي
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
 
-      # إنشاء Release تلقائي ورفع الـ APK فيه
       - name: Create GitHub Release
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         continue-on-error: true
